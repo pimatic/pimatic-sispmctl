@@ -1,9 +1,9 @@
-# 
-convict = require "convict"
-Q = require 'q'
-exec = Q.denodeify(require("child_process").exec)
-
 module.exports = (env) ->
+  convict = env.require "convict"
+  Q = env.require 'q'
+  assert = env.require 'cassert'
+
+  exec = Q.denodeify(require("child_process").exec)
 
   class Sispmctl extends env.plugins.Plugin
     server: null
