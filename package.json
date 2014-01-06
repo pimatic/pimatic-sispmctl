@@ -1,8 +1,9 @@
 { "name": "pimatic-sispmctl",
-  "description": "sispmctl plugin for pimatic",
+  "description": "Backend for the SIS-PM Control for Linux aka sispmct application that can control GEMBIRD (m)SiS-PM device.",
   "author": "Oliver Schneider <oliverschneider89+sweetpi@gmail.com> (http://sweetpi.de)",
   "main": "sispmctl.coffee",
   "files": [
+    "doc",
     "sispmctl.coffee",
     "README.md",
     "actuator-config-shema.coffee",
