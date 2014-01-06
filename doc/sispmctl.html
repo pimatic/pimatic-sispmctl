@@ -25,15 +25,15 @@
       <span class="p">).</span><span class="nx">done</span><span class="p">()</span>
 
 
-    <span class="nv">createActuator: </span><span class="nf">(config) =&gt;</span>
+    <span class="nv">createDevice: </span><span class="nf">(config) =&gt;</span>
       <span class="k">if</span> <span class="nx">config</span><span class="p">.</span><span class="nx">class</span> <span class="o">is</span> <span class="s">&quot;SispmctlSwitch&quot;</span> 
-        <span class="nx">@server</span><span class="p">.</span><span class="nx">registerActuator</span><span class="p">(</span><span class="k">new</span> <span class="nx">SispmctlSwitch</span> <span class="nx">config</span><span class="p">)</span>
+        <span class="nx">@server</span><span class="p">.</span><span class="nx">registerDevice</span><span class="p">(</span><span class="k">new</span> <span class="nx">SispmctlSwitch</span> <span class="nx">config</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">true</span>
       <span class="k">return</span> <span class="kc">false</span>
 
   <span class="nv">backend = </span><span class="k">new</span> <span class="nx">Sispmctl</span>
 
-  <span class="k">class</span> <span class="nx">SispmctlSwitch</span> <span class="k">extends</span> <span class="nx">env</span><span class="p">.</span><span class="nx">actuators</span><span class="p">.</span><span class="nx">PowerSwitch</span>
+  <span class="k">class</span> <span class="nx">SispmctlSwitch</span> <span class="k">extends</span> <span class="nx">env</span><span class="p">.</span><span class="nx">devices</span><span class="p">.</span><span class="nx">PowerSwitch</span>
     <span class="nv">config: </span><span class="kc">null</span>
 
     <span class="nv">constructor: </span><span class="nf">(config) -&gt;</span>

@@ -25,15 +25,15 @@ module.exports = (env) ->
       ).done()
 
 
-    createActuator: (config) =>
+    createDevice: (config) =>
       if config.class is "SispmctlSwitch" 
-        @server.registerActuator(new SispmctlSwitch config)
+        @server.registerDevice(new SispmctlSwitch config)
         return true
       return false
 
   backend = new Sispmctl
 
-  class SispmctlSwitch extends env.actuators.PowerSwitch
+  class SispmctlSwitch extends env.devices.PowerSwitch
     config: null
 
     constructor: (config) ->

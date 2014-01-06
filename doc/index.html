@@ -5,17 +5,17 @@ application that can control GEMBIRD (m)SiS-PM device, witch are USB controled m
 
 <h2 id="configuration">Configuration</h2>
 
-<p>You can load the backend by editing your <code>config.json</code> to include:</p>
+<p>You can load the plugin by editing your <code>config.json</code> to include:</p>
 
 <pre><code>{ 
    "plugin": "sispmctl"
 }
 </code></pre>
 
-<p>in the <code>backend</code> section. For all configuration options see 
+<p>in the <code>plugins</code> section. For all configuration options see 
 <a href="sispmctl-config-shema.html">sispmctl-config-shema</a></p>
 
-<p>Actuators can be added bei adding them to the <code>actuators</code> section in the config file.
+<p>Actuators can be added bei adding them to the <code>devices</code> section in the config file.
 Set the <code>class</code> attribute to <code>SispmctlSwitch</code>. For example:</p>
 
 <pre><code>{ 
@@ -26,5 +26,4 @@ Set the <code>class</code> attribute to <code>SispmctlSwitch</code>. For example
 }
 </code></pre>
 
-<p>For actuator configuration options see the 
-<a href="actuator-config-shema.html">actuator-config-shema</a> file.</p></div></div></div></div></body></html>
+<p>For actuator configuration options see the <a href="actuator-config-shema.html">actuator-config-shema</a> file.</p></div></div></div></div></body></html>
