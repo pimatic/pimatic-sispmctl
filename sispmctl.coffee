@@ -39,6 +39,7 @@ module.exports = (env) ->
 
       @name = config.name
       @id = config.id
+      super()
 
     getState: () ->
       if @_state? then return @_state
