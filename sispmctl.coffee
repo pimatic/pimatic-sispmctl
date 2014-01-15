@@ -6,20 +6,16 @@ module.exports = (env) ->
   exec = Q.denodeify(require("child_process").exec)
 
   class Sispmctl extends env.plugins.Plugin
-    server: null
-    config: null
 
-    init: (app, @server, config) =>
-      self = this
+    init: (app, @framework, config) =>
       conf = convict require("./sispmctl-config-shema")
       conf.load config
       conf.validate()
-      self.config = conf.get ""
-      self.checkBinary()
+      @config = conf.get ""
+      @checkBinary()
 
     checkBinary: ->
-      self = this
-      exec("#{self.config.binary} -v").catch( (error) ->
+      exec("#{@config.binary} -v").catch( (error) ->
         if error.message.match "not found"
           env.logger.error "sispmctl binary not found. Check your config!"
       ).done()
@@ -27,63 +23,58 @@ module.exports = (env) ->
 
     createDevice: (config) =>
       if config.class is "SispmctlSwitch" 
-        @server.registerDevice(new SispmctlSwitch config)
+        @framework.registerDevice(new SispmctlSwitch config)
         return true
       return false
 
-  backend = new Sispmctl
+  plugin = new Sispmctl
 
   class SispmctlSwitch extends env.devices.PowerSwitch
-    config: null
 
     constructor: (config) ->
-      self = this
       conf = convict require("./actuator-config-shema")
       conf.load config
       conf.validate()
-      self.config = conf.get ""
+      @config = conf.get ""
 
-      self.name = config.name
-      self.id = config.id
+      @name = config.name
+      @id = config.id
 
     getState: () ->
-      self = this
-      unless self._state?
-        # Built the sispmctrl command to get the outlet status
-        command = "#{backend.config.binary} -q -n" # quiet and numerical
-        command += " -d #{self.config.device}" # select the device
-        command += " -g #{self.config.outletUnit}" # get status of the outlet
-        # and execue it.
-        return exec(command).then( (streams) ->
-          stdout = streams[0]
-          stderr = streams[1]
-          stdout = stdout.trim()
-          switch stdout
-            when "1"
-              return self._state = on
-            when "0"
-              return self._state = off
-            else 
-              env.logger.debug stderr
-              throw new Error "SispmctlSwitch: unknown state=\"#{stdout}\"!"
-          )
-      else Q.fcall -> self._state
+      if @_state? then return @_state
+      # Built the sispmctrl command to get the outlet status
+      command = "#{plugin.config.binary} -q -n" # quiet and numerical
+      command += " -d #{@config.device}" # select the device
+      command += " -g #{@config.outletUnit}" # get status of the outlet
+      # and execue it.
+      return exec(command).then( (streams) =>
+        stdout = streams[0]
+        stderr = streams[1]
+        stdout = stdout.trim()
+        switch stdout
+          when "1"
+            return @_state = on
+          when "0"
+            return @_state = off
+          else 
+            env.logger.debug stderr
+            throw new Error "SispmctlSwitch: unknown state=\"#{stdout}\"!"
+        )
         
 
     changeStateTo: (state) ->
-      self = this
-      if self.state is state then return Q.fcall -> true
+      if @state is state then return Q()
       # Built the sispmctrl command
-      command = "#{backend.config.binary}"
-      command += " -d #{self.config.device}" # select the device
+      command = "#{plugin.config.binary}"
+      command += " -d #{@config.device}" # select the device
       command += " " + (if state then "-o" else "-f") # do on or off
-      command += " " + self.config.outletUnit # select the outlet
+      command += " " + @config.outletUnit # select the outlet
       # and execue it.
-      return exec(command).then( (streams) ->
+      return exec(command).then( (streams) =>
         stdout = streams[0]
         stderr = streams[1]
         env.logger.debug stderr if stderr.length isnt 0
-        self._setState(state)
+        @_setState(state)
       )
 
-  return backend
+  return plugin
