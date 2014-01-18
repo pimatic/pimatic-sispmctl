@@ -42,7 +42,7 @@ module.exports = (env) ->
       super()
 
     getState: () ->
-      if @_state? then return @_state
+      if @_state? then return Q @_state
       # Built the sispmctrl command to get the outlet status
       command = "#{plugin.config.binary} -q -n" # quiet and numerical
       command += " -d #{@config.device}" # select the device
@@ -54,9 +54,11 @@ module.exports = (env) ->
         stdout = stdout.trim()
         switch stdout
           when "1"
-            return @_state = on
+            @_state = on
+            return Q @_state
           when "0"
-            return @_state = off
+            @_state = off
+            return Q @_state
           else 
             env.logger.debug stderr
             throw new Error "SispmctlSwitch: unknown state=\"#{stdout}\"!"
@@ -64,7 +66,7 @@ module.exports = (env) ->
         
 
     changeStateTo: (state) ->
-      if @state is state then return Q()
+      if @state is state then return
       # Built the sispmctrl command
       command = "#{plugin.config.binary}"
       command += " -d #{@config.device}" # select the device
