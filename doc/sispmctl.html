@@ -6,20 +6,16 @@
   <span class="nv">exec = </span><span class="nx">Q</span><span class="p">.</span><span class="nx">denodeify</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s">&quot;child_process&quot;</span><span class="p">).</span><span class="nx">exec</span><span class="p">)</span>
 
   <span class="k">class</span> <span class="nx">Sispmctl</span> <span class="k">extends</span> <span class="nx">env</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">Plugin</span>
-    <span class="nv">server: </span><span class="kc">null</span>
-    <span class="nv">config: </span><span class="kc">null</span>
 
-    <span class="nv">init: </span><span class="nf">(app, @server, config) =&gt;</span>
-      <span class="nv">self = </span><span class="k">this</span>
+    <span class="nv">init: </span><span class="nf">(app, @framework, config) =&gt;</span>
       <span class="nv">conf = </span><span class="nx">convict</span> <span class="nx">require</span><span class="p">(</span><span class="s">&quot;./sispmctl-config-shema&quot;</span><span class="p">)</span>
       <span class="nx">conf</span><span class="p">.</span><span class="nx">load</span> <span class="nx">config</span>
       <span class="nx">conf</span><span class="p">.</span><span class="nx">validate</span><span class="p">()</span>
-      <span class="nv">self.config = </span><span class="nx">conf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;&quot;</span>
-      <span class="nx">self</span><span class="p">.</span><span class="nx">checkBinary</span><span class="p">()</span>
+      <span class="vi">@config = </span><span class="nx">conf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;&quot;</span>
+      <span class="nx">@checkBinary</span><span class="p">()</span>
 
     <span class="nv">checkBinary: </span><span class="nf">-&gt;</span>
-      <span class="nv">self = </span><span class="k">this</span>
-      <span class="nx">exec</span><span class="p">(</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">binary</span><span class="si">}</span><span class="s"> -v&quot;</span><span class="p">).</span><span class="nx">catch</span><span class="p">(</span> <span class="nf">(error) -&gt;</span>
+      <span class="nx">exec</span><span class="p">(</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@config</span><span class="p">.</span><span class="nx">binary</span><span class="si">}</span><span class="s"> -v&quot;</span><span class="p">).</span><span class="nx">catch</span><span class="p">(</span> <span class="nf">(error) -&gt;</span>
         <span class="k">if</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">match</span> <span class="s">&quot;not found&quot;</span>
           <span class="nx">env</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">error</span> <span class="s">&quot;sispmctl binary not found. Check your config!&quot;</span>
       <span class="p">).</span><span class="nx">done</span><span class="p">()</span>
@@ -27,55 +23,53 @@
 
     <span class="nv">createDevice: </span><span class="nf">(config) =&gt;</span>
       <span class="k">if</span> <span class="nx">config</span><span class="p">.</span><span class="nx">class</span> <span class="o">is</span> <span class="s">&quot;SispmctlSwitch&quot;</span> 
-        <span class="nx">@server</span><span class="p">.</span><span class="nx">registerDevice</span><span class="p">(</span><span class="k">new</span> <span class="nx">SispmctlSwitch</span> <span class="nx">config</span><span class="p">)</span>
+        <span class="nx">@framework</span><span class="p">.</span><span class="nx">registerDevice</span><span class="p">(</span><span class="k">new</span> <span class="nx">SispmctlSwitch</span> <span class="nx">config</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">true</span>
       <span class="k">return</span> <span class="kc">false</span>
 
-  <span class="nv">backend = </span><span class="k">new</span> <span class="nx">Sispmctl</span>
+  <span class="nv">plugin = </span><span class="k">new</span> <span class="nx">Sispmctl</span>
 
   <span class="k">class</span> <span class="nx">SispmctlSwitch</span> <span class="k">extends</span> <span class="nx">env</span><span class="p">.</span><span class="nx">devices</span><span class="p">.</span><span class="nx">PowerSwitch</span>
-    <span class="nv">config: </span><span class="kc">null</span>
 
     <span class="nv">constructor: </span><span class="nf">(config) -&gt;</span>
-      <span class="nv">self = </span><span class="k">this</span>
       <span class="nv">conf = </span><span class="nx">convict</span> <span class="nx">require</span><span class="p">(</span><span class="s">&quot;./actuator-config-shema&quot;</span><span class="p">)</span>
       <span class="nx">conf</span><span class="p">.</span><span class="nx">load</span> <span class="nx">config</span>
       <span class="nx">conf</span><span class="p">.</span><span class="nx">validate</span><span class="p">()</span>
-      <span class="nv">self.config = </span><span class="nx">conf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;&quot;</span>
+      <span class="vi">@config = </span><span class="nx">conf</span><span class="p">.</span><span class="nx">get</span> <span class="s">&quot;&quot;</span>
 
-      <span class="nv">self.name = </span><span class="nx">config</span><span class="p">.</span><span class="nx">name</span>
-      <span class="nv">self.id = </span><span class="nx">config</span><span class="p">.</span><span class="nx">id</span>
+      <span class="vi">@name = </span><span class="nx">config</span><span class="p">.</span><span class="nx">name</span>
+      <span class="vi">@id = </span><span class="nx">config</span><span class="p">.</span><span class="nx">id</span>
+      <span class="k">super</span><span class="p">()</span>
 
     <span class="nv">getState: </span><span class="p">()</span> <span class="nf">-&gt;</span>
-      <span class="nv">self = </span><span class="k">this</span>
-      <span class="k">unless</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_state</span><span class="o">?</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Built the sispmctrl command to get the outlet status</p></div></div><div class="code"><div class="wrapper">        <span class="nv">command = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">backend</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">binary</span><span class="si">}</span><span class="s"> -q -n&quot;</span> <span class="c1"># quiet and numerical</span>
-        <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; -d </span><span class="si">#{</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">device</span><span class="si">}</span><span class="s">&quot;</span> <span class="c1"># select the device</span>
-        <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; -g </span><span class="si">#{</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">outletUnit</span><span class="si">}</span><span class="s">&quot;</span> <span class="c1"># get status of the outlet</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>and execue it.</p></div></div><div class="code"><div class="wrapper">        <span class="k">return</span> <span class="nx">exec</span><span class="p">(</span><span class="nx">command</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span> <span class="nf">(streams) -&gt;</span>
-          <span class="nv">stdout = </span><span class="nx">streams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-          <span class="nv">stderr = </span><span class="nx">streams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-          <span class="nv">stdout = </span><span class="nx">stdout</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span>
-          <span class="k">switch</span> <span class="nx">stdout</span>
-            <span class="k">when</span> <span class="s">&quot;1&quot;</span>
-              <span class="k">return</span> <span class="nv">self._state = </span><span class="kc">on</span>
-            <span class="k">when</span> <span class="s">&quot;0&quot;</span>
-              <span class="k">return</span> <span class="nv">self._state = </span><span class="kc">off</span>
-            <span class="k">else</span> 
-              <span class="nx">env</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">stderr</span>
-              <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;SispmctlSwitch: unknown state=\&quot;</span><span class="si">#{</span><span class="nx">stdout</span><span class="si">}</span><span class="s">\&quot;!&quot;</span>
-          <span class="p">)</span>
-      <span class="k">else</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">fcall</span> <span class="nf">-&gt;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_state</span>
+      <span class="k">if</span> <span class="nx">@_state</span><span class="o">?</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">Q</span> <span class="nx">@_state</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Built the sispmctrl command to get the outlet status</p></div></div><div class="code"><div class="wrapper">      <span class="nv">command = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">binary</span><span class="si">}</span><span class="s"> -q -n&quot;</span> <span class="c1"># quiet and numerical</span>
+      <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; -d </span><span class="si">#{</span><span class="nx">@config</span><span class="p">.</span><span class="nx">device</span><span class="si">}</span><span class="s">&quot;</span> <span class="c1"># select the device</span>
+      <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; -g </span><span class="si">#{</span><span class="nx">@config</span><span class="p">.</span><span class="nx">outletUnit</span><span class="si">}</span><span class="s">&quot;</span> <span class="c1"># get status of the outlet</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>and execue it.</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">exec</span><span class="p">(</span><span class="nx">command</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span> <span class="nf">(streams) =&gt;</span>
+        <span class="nv">stdout = </span><span class="nx">streams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nv">stderr = </span><span class="nx">streams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nv">stdout = </span><span class="nx">stdout</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span>
+        <span class="k">switch</span> <span class="nx">stdout</span>
+          <span class="k">when</span> <span class="s">&quot;1&quot;</span>
+            <span class="vi">@_state = </span><span class="kc">on</span>
+            <span class="k">return</span> <span class="nx">Q</span> <span class="nx">@_state</span>
+          <span class="k">when</span> <span class="s">&quot;0&quot;</span>
+            <span class="vi">@_state = </span><span class="kc">off</span>
+            <span class="k">return</span> <span class="nx">Q</span> <span class="nx">@_state</span>
+          <span class="k">else</span> 
+            <span class="nx">env</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">stderr</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;SispmctlSwitch: unknown state=\&quot;</span><span class="si">#{</span><span class="nx">stdout</span><span class="si">}</span><span class="s">\&quot;!&quot;</span>
+        <span class="p">)</span>
         
 
     <span class="nv">changeStateTo: </span><span class="nf">(state) -&gt;</span>
-      <span class="nv">self = </span><span class="k">this</span>
-      <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">state</span> <span class="o">is</span> <span class="nx">state</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">fcall</span> <span class="nf">-&gt;</span> <span class="kc">true</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Built the sispmctrl command</p></div></div><div class="code"><div class="wrapper">      <span class="nv">command = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">backend</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">binary</span><span class="si">}</span><span class="s">&quot;</span>
-      <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; -d </span><span class="si">#{</span><span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">device</span><span class="si">}</span><span class="s">&quot;</span> <span class="c1"># select the device</span>
+      <span class="k">if</span> <span class="nx">@state</span> <span class="o">is</span> <span class="nx">state</span> <span class="k">then</span> <span class="k">return</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Built the sispmctrl command</p></div></div><div class="code"><div class="wrapper">      <span class="nv">command = </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">binary</span><span class="si">}</span><span class="s">&quot;</span>
+      <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; -d </span><span class="si">#{</span><span class="nx">@config</span><span class="p">.</span><span class="nx">device</span><span class="si">}</span><span class="s">&quot;</span> <span class="c1"># select the device</span>
       <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="k">if</span> <span class="nx">state</span> <span class="k">then</span> <span class="s">&quot;-o&quot;</span> <span class="k">else</span> <span class="s">&quot;-f&quot;</span><span class="p">)</span> <span class="c1"># do on or off</span>
-      <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">outletUnit</span> <span class="c1"># select the outlet</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>and execue it.</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">exec</span><span class="p">(</span><span class="nx">command</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span> <span class="nf">(streams) -&gt;</span>
+      <span class="nx">command</span> <span class="o">+=</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="nx">@config</span><span class="p">.</span><span class="nx">outletUnit</span> <span class="c1"># select the outlet</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>and execue it.</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="nx">exec</span><span class="p">(</span><span class="nx">command</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span> <span class="nf">(streams) =&gt;</span>
         <span class="nv">stdout = </span><span class="nx">streams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="nv">stderr = </span><span class="nx">streams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="nx">env</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">debug</span> <span class="nx">stderr</span> <span class="k">if</span> <span class="nx">stderr</span><span class="p">.</span><span class="nx">length</span> <span class="o">isnt</span> <span class="mi">0</span>
-        <span class="nx">self</span><span class="p">.</span><span class="nx">_setState</span><span class="p">(</span><span class="nx">state</span><span class="p">)</span>
+        <span class="nx">@_setState</span><span class="p">(</span><span class="nx">state</span><span class="p">)</span>
       <span class="p">)</span>
 
-  <span class="k">return</span> <span class="nx">backend</span></div></div></div></div></body></html>
+  <span class="k">return</span> <span class="nx">plugin</span></div></div></div></div></body></html>
