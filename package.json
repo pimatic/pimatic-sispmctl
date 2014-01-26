@@ -10,10 +10,10 @@
     "sispmctl-config-shema.coffee"
   ],
   "version": "0.5.0",
-  "homepage": "http://github.com/sweetpi/pimatic",
+  "homepage": "http://github.com/pimatic/pimatic",
   "repository": {
     "type": "git",
-    "url": "git://github.com/sweetpi/pimatic-sispmctl.git"
+    "url": "git://github.com/pimatic/pimatic-sispmctl.git"
   },
   "dependencies": {
   },
