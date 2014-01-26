@@ -8,7 +8,7 @@ module.exports = (env) ->
   class Sispmctl extends env.plugins.Plugin
 
     init: (app, @framework, config) =>
-      conf = convict require("./sispmctl-config-shema")
+      conf = convict require("./sispmctl-config-schema")
       conf.load config
       conf.validate()
       @config = conf.get ""
@@ -32,7 +32,7 @@ module.exports = (env) ->
   class SispmctlSwitch extends env.devices.PowerSwitch
 
     constructor: (config) ->
-      conf = convict require("./actuator-config-shema")
+      conf = convict require("./actuator-config-schema")
       conf.load config
       conf.validate()
       @config = conf.get ""

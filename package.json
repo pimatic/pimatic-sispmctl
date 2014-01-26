@@ -6,8 +6,8 @@
     "doc",
     "sispmctl.coffee",
     "README.md",
-    "actuator-config-shema.coffee",
-    "sispmctl-config-shema.coffee"
+    "actuator-config-schema.coffee",
+    "sispmctl-config-schema.coffee"
   ],
   "version": "0.5.0",
   "homepage": "http://github.com/pimatic/pimatic",

@@ -12,7 +12,7 @@ You can load the plugin by editing your `config.json` to include:
     }
 
 in the `plugins` section. For all configuration options see 
-[sispmctl-config-shema](sispmctl-config-shema.html)
+[sispmctl-config-schema](sispmctl-config-schema.html)
 
 Actuators can be defined by adding them to the `devices` section in the config file.
 Set the `class` attribute to `SispmctlSwitch`. For example:
@@ -24,4 +24,4 @@ Set the `class` attribute to `SispmctlSwitch`. For example:
       "outletUnit": 1 
     }
 
-For actuator configuration options see the [actuator-config-shema](actuator-config-shema.html) file.
+For actuator configuration options see the [actuator-config-schema](actuator-config-schema.html) file.
