@@ -14,7 +14,7 @@ You can load the plugin by editing your `config.json` to include:
 in the `plugins` section. For all configuration options see 
 [sispmctl-config-shema](sispmctl-config-shema.html)
 
-Actuators can be added bei adding them to the `devices` section in the config file.
+Actuators can be defined by adding them to the `devices` section in the config file.
 Set the `class` attribute to `SispmctlSwitch`. For example:
 
     { 
