@@ -9,7 +9,7 @@
     "actuator-config-schema.coffee",
     "sispmctl-config-schema.coffee"
   ],
-  "version": "0.5.1",
+  "version": "0.5.2",
   "homepage": "http://github.com/pimatic/pimatic",
   "repository": {
     "type": "git",

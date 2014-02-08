@@ -2,6 +2,7 @@ module.exports = (env) ->
   convict = env.require "convict"
   Q = env.require 'q'
   assert = env.require 'cassert'
+  _ = env.require 'lodash'
 
   exec = Q.denodeify(require("child_process").exec)
 
@@ -32,7 +33,7 @@ module.exports = (env) ->
   class SispmctlSwitch extends env.devices.PowerSwitch
 
     constructor: (config) ->
-      conf = convict require("./actuator-config-schema")
+      conf = convict _.cloneDeep(require("./actuator-config-schema"))
       conf.load config
       conf.validate()
       @config = conf.get ""
