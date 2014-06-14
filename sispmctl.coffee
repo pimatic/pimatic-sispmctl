@@ -15,29 +15,25 @@ module.exports = (env) ->
       @config = conf.get ""
       @checkBinary()
 
+
+      deviceConfigDef = require("./device-config-schema")
+
+      @framework.registerDeviceClass("SispmctlSwitch", {
+        configDef: deviceConfigDef.SispmctlSwitch, 
+        createCallback: (config) => new SispmctlSwitch(config)
+      })
+
     checkBinary: ->
       exec("#{@config.binary} -v").catch( (error) ->
         if error.message.match "not found"
           env.logger.error "sispmctl binary not found. Check your config!"
       ).done()
 
-
-    createDevice: (config) =>
-      if config.class is "SispmctlSwitch" 
-        @framework.registerDevice(new SispmctlSwitch config)
-        return true
-      return false
-
   plugin = new Sispmctl
 
   class SispmctlSwitch extends env.devices.PowerSwitch
 
-    constructor: (config) ->
-      conf = convict _.cloneDeep(require("./actuator-config-schema"))
-      conf.load config
-      conf.validate()
-      @config = conf.get ""
-
+    constructor: (@config) ->
       @name = config.name
       @id = config.id
       super()
