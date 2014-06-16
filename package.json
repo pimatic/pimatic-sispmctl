@@ -6,7 +6,7 @@
     "doc",
     "sispmctl.coffee",
     "README.md",
-    "actuator-config-schema.coffee",
+    "device-config-schema.coffee",
     "sispmctl-config-schema.coffee"
   ],
   "version": "0.8.0",
