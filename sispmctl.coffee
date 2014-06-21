@@ -1,5 +1,4 @@
 module.exports = (env) ->
-  convict = env.require "convict"
   Q = env.require 'q'
   assert = env.require 'cassert'
   _ = env.require 'lodash'
@@ -8,16 +7,9 @@ module.exports = (env) ->
 
   class Sispmctl extends env.plugins.Plugin
 
-    init: (app, @framework, config) =>
-      conf = convict require("./sispmctl-config-schema")
-      conf.load config
-      conf.validate()
-      @config = conf.get ""
+    init: (app, @framework, @config) =>
       @checkBinary()
-
-
       deviceConfigDef = require("./device-config-schema")
-
       @framework.registerDeviceClass("SispmctlSwitch", {
         configDef: deviceConfigDef.SispmctlSwitch, 
         createCallback: (config) => new SispmctlSwitch(config)

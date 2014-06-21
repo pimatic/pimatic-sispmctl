@@ -15,6 +15,7 @@
     "type": "git",
     "url": "git://github.com/pimatic/pimatic-sispmctl.git"
   },
+  "configSchema": "sispmctl-config-schema.coffee",
   "dependencies": {
   },
   "peerDependencies": {

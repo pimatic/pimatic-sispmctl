@@ -1,8 +1,10 @@
 # #sispmctl configuration options
-
-# Defines a `node-convict` config-schema and exports it.
-module.exports =
-  binary:
-    doc: "The path to the sispmctl command"
-    format: String
-    default: "sispmctl"
+module.exports = {
+  title: "sispmctl config"
+  type: "object"
+  properties:
+    binary:
+      description: "The path to the sispmctl command"
+      type: "string"
+      default: "sispmctl"
+}
