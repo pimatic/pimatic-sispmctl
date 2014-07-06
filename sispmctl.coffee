@@ -1,9 +1,9 @@
 module.exports = (env) ->
-  Q = env.require 'q'
+  Promise = env.require 'bluebird'
   assert = env.require 'cassert'
   _ = env.require 'lodash'
 
-  exec = Q.denodeify(require("child_process").exec)
+  exec = Promise.promisify(require("child_process").exec)
 
   class Sispmctl extends env.plugins.Plugin
 
@@ -31,7 +31,7 @@ module.exports = (env) ->
       super()
 
     getState: () ->
-      if @_state? then return Q @_state
+      if @_state? then return Promise.resolve @_state
       # Built the sispmctrl command to get the outlet status
       command = "#{plugin.config.binary} -q -n" # quiet and numerical
       command += " -d #{@config.device}" # select the device
@@ -44,10 +44,10 @@ module.exports = (env) ->
         switch stdout
           when "1"
             @_state = on
-            return Q @_state
+            return Promise.resolve @_state
           when "0"
             @_state = off
-            return Q @_state
+            return Promise.resolve @_state
           else 
             env.logger.debug stderr
             throw new Error "SispmctlSwitch: unknown state=\"#{stdout}\"!"
