@@ -10,7 +10,7 @@ module.exports = (env) ->
     init: (app, @framework, @config) =>
       @checkBinary()
       deviceConfigDef = require("./device-config-schema")
-      @framework.registerDeviceClass("SispmctlSwitch", {
+      @framework.deviceManager.registerDeviceClass("SispmctlSwitch", {
         configDef: deviceConfigDef.SispmctlSwitch, 
         createCallback: (config) => new SispmctlSwitch(config)
       })
