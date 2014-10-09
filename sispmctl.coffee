@@ -25,8 +25,8 @@ module.exports = (env) ->
           env.logger.error "sispmctl binary not found. Check your config!"
       )
 
-    exec: (command, streams) ->
-      @_lastAction = settled(@_lastAction).then( -> exec(command, streams) )
+    exec: (command) ->
+      @_lastAction = settled(@_lastAction).then( -> exec(command) )
       return @_lastAction
 
 
@@ -46,7 +46,7 @@ module.exports = (env) ->
       command += " -d #{@config.device}" # select the device
       command += " -g #{@config.outletUnit}" # get status of the outlet
       # and execue it.
-      return plugin.exec(command, (streams) =>
+      return plugin.exec(command).then( (streams) =>
         stdout = streams[0]
         stderr = streams[1]
         stdout = stdout.trim()
