@@ -27,8 +27,7 @@ module.exports = (env) ->
 
     exec: (command) ->
       console.log command
-      @_lastAction = settled(@_lastAction).then( -> exec(command) )
-      return @_lastAction
+      return exec(command)
 
 
   plugin = new Sispmctl
