@@ -4,11 +4,15 @@ module.exports = (env) ->
   _ = env.require 'lodash'
 
   exec = Promise.promisify(require("child_process").exec)
+  settled = (promise) -> Promise.settle([promise])
 
   class Sispmctl extends env.plugins.Plugin
 
     init: (app, @framework, @config) =>
-      @checkBinary()
+      # lastAction is a promise for the last/current sispmctrl call, wel always chain on
+      # this so that sispmctl gets never called while its already running.
+      @_lastAction = @checkBinary()
+      @_lastAction.done()
       deviceConfigDef = require("./device-config-schema")
       @framework.deviceManager.registerDeviceClass("SispmctlSwitch", {
         configDef: deviceConfigDef.SispmctlSwitch, 
@@ -16,10 +20,14 @@ module.exports = (env) ->
       })
 
     checkBinary: ->
-      exec("#{@config.binary} -v").catch( (error) ->
+      return exec("#{@config.binary} -v").catch( (error) ->
         if error.message.match "not found"
           env.logger.error "sispmctl binary not found. Check your config!"
-      ).done()
+      )
+
+    exec: (command) ->
+      return @_lastAction = settled(@_lastAction).then( => exec(command) )
+
 
   plugin = new Sispmctl
 
@@ -37,7 +45,7 @@ module.exports = (env) ->
       command += " -d #{@config.device}" # select the device
       command += " -g #{@config.outletUnit}" # get status of the outlet
       # and execue it.
-      return exec(command).then( (streams) =>
+      return plugin.exec(command,  (streams) =>
         stdout = streams[0]
         stderr = streams[1]
         stdout = stdout.trim()
@@ -51,7 +59,7 @@ module.exports = (env) ->
           else 
             env.logger.debug stderr
             throw new Error "SispmctlSwitch: unknown state=\"#{stdout}\"!"
-        )
+      )
         
 
     changeStateTo: (state) ->
@@ -62,7 +70,7 @@ module.exports = (env) ->
       command += " " + (if state then "-o" else "-f") # do on or off
       command += " " + @config.outletUnit # select the outlet
       # and execue it.
-      return exec(command).then( (streams) =>
+      return plugin.exec(command).then( (streams) =>
         stdout = streams[0]
         stderr = streams[1]
         env.logger.debug stderr if stderr.length isnt 0
