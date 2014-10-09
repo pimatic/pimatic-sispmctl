@@ -26,7 +26,9 @@ module.exports = (env) ->
       )
 
     exec: (command) ->
-      return @_lastAction = settled(@_lastAction).then( => exec(command) )
+      console.log command
+      @_lastAction = settled(@_lastAction).then( -> exec(command) )
+      return @_lastAction
 
 
   plugin = new Sispmctl
@@ -45,7 +47,7 @@ module.exports = (env) ->
       command += " -d #{@config.device}" # select the device
       command += " -g #{@config.outletUnit}" # get status of the outlet
       # and execue it.
-      return plugin.exec(command,  (streams) =>
+      return plugin.exec(command, (streams) =>
         stdout = streams[0]
         stderr = streams[1]
         stdout = stdout.trim()
