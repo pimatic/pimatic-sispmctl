@@ -25,9 +25,9 @@ module.exports = (env) ->
           env.logger.error "sispmctl binary not found. Check your config!"
       )
 
-    exec: (command) ->
-      console.log command
-      return exec(command)
+    exec: (command, streams) ->
+      @_lastAction = settled(@_lastAction).then( -> exec(command, streams) )
+      return @_lastAction
 
 
   plugin = new Sispmctl
