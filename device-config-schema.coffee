@@ -3,6 +3,7 @@ module.exports = {
   SispmctlSwitch: {
     title: "SispmctlSwitch config options"
     type: "object"
+    extensions: ["xConfirm", "xLink", "xOnLabel", "xOffLabel"]
     properties:
       outletUnit:
         description: "The outlet unit number"
