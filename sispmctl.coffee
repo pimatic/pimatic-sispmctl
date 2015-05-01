@@ -43,7 +43,10 @@ module.exports = (env) ->
       if @_state? then return Promise.resolve @_state
       # Built the sispmctrl command to get the outlet status
       command = "#{plugin.config.binary} -q -n" # quiet and numerical
-      command += " -d #{@config.device}" # select the device
+      if @config.deviceSerial?
+        command += " -D #{@config.deviceSerial}" # select the device
+      else
+        command += " -d #{@config.device}" # select the device
       command += " -g #{@config.outletUnit}" # get status of the outlet
       # and execue it.
       return plugin.exec(command).then( (streams) =>
@@ -67,7 +70,10 @@ module.exports = (env) ->
       if @state is state then return
       # Built the sispmctrl command
       command = "#{plugin.config.binary}"
-      command += " -d #{@config.device}" # select the device
+      if @config.deviceSerial?
+        command += " -D #{@config.deviceSerial}" # select the device
+      else
+        command += " -d #{@config.device}" # select the device
       command += " " + (if state then "-o" else "-f") # do on or off
       command += " " + @config.outletUnit # select the outlet
       # and execue it.
