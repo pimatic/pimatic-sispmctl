@@ -1,4 +1,5 @@
-{ "name": "pimatic-sispmctl",
+{
+  "name": "pimatic-sispmctl",
   "description": "Plugin for SIS-PM Control for Linux aka sispmct application that can control GEMBIRD (m)SiS-PM device.",
   "author": "Oliver Schneider <oliverschneider89+sweetpi@gmail.com> (http://sweetpi.de)",
   "main": "sispmctl.coffee",
@@ -9,15 +10,14 @@
     "device-config-schema.coffee",
     "sispmctl-config-schema.coffee"
   ],
-  "version": "0.8.2",
+  "version": "0.8.3",
   "homepage": "http://github.com/pimatic/pimatic",
   "repository": {
     "type": "git",
     "url": "git://github.com/pimatic/pimatic-sispmctl.git"
   },
   "configSchema": "sispmctl-config-schema.coffee",
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "pimatic": "0.8.*"
   },
