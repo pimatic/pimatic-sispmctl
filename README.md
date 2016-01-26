@@ -1,7 +1,7 @@
 pimatic sispmctl plugin
 =======================
 Backend for the [SIS-PM Control for Linux aka sispmct](http://sispmctl.sourceforge.net/) 
-application that can control GEMBIRD (m)SiS-PM device, witch are USB controled multiple socket.
+application that can control GEMBIRD (m)SiS-PM device, witch are USB controlled multiple socket.
 
 Configuration
 -------------
@@ -24,4 +24,4 @@ Set the `class` attribute to `SispmctlSwitch`. For example:
       "outletUnit": 1 
     }
 
-For actuator configuration options see the [actuator-config-schema](actuator-config-schema.html) file.
+For device configuration options see the [device-config-schema](device-config-schema.html) file.
