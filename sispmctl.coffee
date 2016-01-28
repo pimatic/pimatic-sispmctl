@@ -43,6 +43,8 @@ module.exports = (env) ->
     _updateStatus: () ->
       setTimeout () =>
         @_getState()
+        .catch (error) =>
+          env.logger.error error.message ? error
         .finally () =>
           @_updateStatus()
       , @config.interval
