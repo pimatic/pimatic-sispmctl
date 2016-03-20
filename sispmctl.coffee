@@ -9,7 +9,7 @@ module.exports = (env) ->
   class Sispmctl extends env.plugins.Plugin
 
     init: (app, @framework, @config) =>
-      # lastAction is a promise for the last/current sispmctrl call, wel always chain on
+      # lastAction is a promise for the last/current sispmctl call, wel always chain on
       # this so that sispmctl gets never called while its already running.
       @_lastAction = @checkBinary()
       @_lastAction.done()
@@ -38,37 +38,51 @@ module.exports = (env) ->
       @name = @config.name
       @id = @config.id
       super()
+      @_updateStatus() if @config.interval > 0
 
-    getState: () ->
-      if @_state? then return Promise.resolve @_state
-      # Built the sispmctrl command to get the outlet status
+    _updateStatus: () ->
+      setTimeout () =>
+        @_getState()
+        .catch (error) =>
+          env.logger.error error.message ? error
+        .finally () =>
+          @_updateStatus()
+      , @config.interval
+
+    _getState: () ->
+      # Build the sispmctl command to get the outlet status
       command = "#{plugin.config.binary} -q -n" # quiet and numerical
       if @config.deviceSerial?
         command += " -D #{@config.deviceSerial}" # select the device
       else
         command += " -d #{@config.device}" # select the device
       command += " -g #{@config.outletUnit}" # get status of the outlet
-      # and execue it.
+      # and execute it.
       return plugin.exec(command).then( (streams) =>
         stdout = streams[0]
         stderr = streams[1]
         stdout = stdout.trim()
         switch stdout
           when "1"
-            @_state = on
+            @_setState(on)
             return Promise.resolve @_state
           when "0"
-            @_state = off
+            @_setState(off)
             return Promise.resolve @_state
           else 
             env.logger.debug stderr
             throw new Error "SispmctlSwitch: unknown state=\"#{stdout}\"!"
       )
-        
+
+    getState: () ->
+      if @_state?
+        return Promise.resolve @_state
+      else
+        return @_getState()
 
     changeStateTo: (state) ->
       if @state is state then return
-      # Built the sispmctrl command
+      # Build the sispmctl command
       command = "#{plugin.config.binary}"
       if @config.deviceSerial?
         command += " -D #{@config.deviceSerial}" # select the device
@@ -76,7 +90,7 @@ module.exports = (env) ->
         command += " -d #{@config.device}" # select the device
       command += " " + (if state then "-o" else "-f") # do on or off
       command += " " + @config.outletUnit # select the outlet
-      # and execue it.
+      # and execute it.
       return plugin.exec(command).then( (streams) =>
         stdout = streams[0]
         stderr = streams[1]
