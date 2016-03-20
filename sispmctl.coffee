@@ -35,8 +35,8 @@ module.exports = (env) ->
   class SispmctlSwitch extends env.devices.PowerSwitch
 
     constructor: (@config) ->
-      @name = config.name
-      @id = config.id
+      @name = @config.name
+      @id = @config.id
       super()
 
     getState: () ->

@@ -8,7 +8,8 @@
     "sispmctl.coffee",
     "README.md",
     "device-config-schema.coffee",
-    "sispmctl-config-schema.coffee"
+    "sispmctl-config-schema.coffee",
+    "LICENSE"
   ],
   "version": "0.8.3",
   "homepage": "http://github.com/pimatic/pimatic",
@@ -16,10 +17,11 @@
     "type": "git",
     "url": "git://github.com/pimatic/pimatic-sispmctl.git"
   },
+  "license": "GPL-2.0",
   "configSchema": "sispmctl-config-schema.coffee",
   "dependencies": {},
   "peerDependencies": {
-    "pimatic": "0.8.*"
+    "pimatic": ">=0.8.0 <1.0.0"
   },
   "engines": {
     "node": ">0.8.x",
