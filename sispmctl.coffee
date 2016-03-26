@@ -2,8 +2,15 @@ module.exports = (env) ->
   Promise = env.require 'bluebird'
   assert = env.require 'cassert'
   _ = env.require 'lodash'
+  child_process = require("child_process")
 
-  exec = Promise.promisify(require("child_process").exec)
+  exec = (command) ->
+    return new Promise( (resolve, reject) ->
+      child_process.exec(command, (err, stdout, stderr) ->
+        if err then return reject(err)
+        return resolve({stdout: stdout.toString(), stderr: stderr.toString()})
+      )
+    )
   settled = (promise) -> Promise.settle([promise])
 
   class Sispmctl extends env.plugins.Plugin
@@ -58,10 +65,10 @@ module.exports = (env) ->
         command += " -d #{@config.device}" # select the device
       command += " -g #{@config.outletUnit}" # get status of the outlet
       # and execute it.
-      return plugin.exec(command).then( (streams) =>
-        stdout = streams[0]
-        stderr = streams[1]
+      env.logger.debug("executing #{command}") if plugin.config.debug
+      return plugin.exec(command).then( ({stdout, stderr}) =>
         stdout = stdout.trim()
+        env.logger.debug "stdout \"#{stdout}\", stderror: \"#{stderr}\"" if stderr.length isnt 0
         switch stdout
           when "1"
             @_setState(on)
@@ -91,10 +98,9 @@ module.exports = (env) ->
       command += " " + (if state then "-o" else "-f") # do on or off
       command += " " + @config.outletUnit # select the outlet
       # and execute it.
-      return plugin.exec(command).then( (streams) =>
-        stdout = streams[0]
-        stderr = streams[1]
-        env.logger.debug stderr if stderr.length isnt 0
+      env.logger.debug("executing #{command}") if plugin.config.debug
+      return plugin.exec(command).then( ({stdout, stderr}) =>
+        env.logger.debug "stdout \"#{stdout}\", stderror: \"#{stderr}\"" if stderr.length isnt 0
         @_setState(state)
       )
 

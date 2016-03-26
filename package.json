@@ -11,7 +11,7 @@
     "sispmctl-config-schema.coffee",
     "LICENSE"
   ],
-  "version": "0.8.6",
+  "version": "0.9.0",
   "homepage": "http://github.com/pimatic/pimatic",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   "configSchema": "sispmctl-config-schema.coffee",
   "dependencies": {},
   "peerDependencies": {
-    "pimatic": "0.8.*"
+    "pimatic": "0.9.*"
   },
   "engines": {
     "node": ">0.8.x",

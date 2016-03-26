@@ -7,4 +7,8 @@ module.exports = {
       description: "The path to the sispmctl command"
       type: "string"
       default: "sispmctl"
+    debug:
+      description: "Show additional debug outputs"
+      type: "string"
+      default: false
 }
